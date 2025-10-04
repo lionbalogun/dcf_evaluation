@@ -145,13 +145,15 @@ DISPLAY_DIVISORS = {
 def pretty_currency(value):
     return f"₦{value:,.2f}"
 
-def to_excel_bytes(proj_df, results):
-    out = BytesIO()
-    with pd.ExcelWriter(out, engine="xlsxwriter") as writer:
-        proj_df.to_excel(writer, sheet_name="Projections", index=False)
-        pd.DataFrame([results]).to_excel(writer, sheet_name="Summary", index=False)
-        writer.save()
-    return out.getvalue()
+def to_excel_bytes(proj_df, summary_dict):
+    output = io.BytesIO()
+    with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+        proj_df.to_excel(writer, sheet_name='Projection', index=False)
+        summary_df = pd.DataFrame(list(summary_dict.items()), columns=["Metric", "Value"])
+        summary_df.to_excel(writer, sheet_name='Summary', index=False)
+    processed_data = output.getvalue()
+    return processed_data
+
 
 # -----------------------
 # Streamlit UI
